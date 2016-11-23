@@ -1,0 +1,36 @@
+---
+- hosts: 192.168.0.13
+  remote_user: kartik
+  sudo: True
+  tasks:
+   - name: install git
+     yum: name=git state=present
+   - name: java
+     yum: name=java-1.8.0-openjdk.x86_64 state=present
+   - command: "{{ item }}"
+     with_items:
+      - java -version
+      - cp /etc/profile /etc/profile_backupecho
+      - echo 'export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk' | sudo tee -a /etc/profile
+      - echo 'export JRE_HOME=/usr/lib/jvm/jre' | sudo tee -a /etc/profile
+
+   - shell: . /home/kartik/.bashrc && source /etc/profile
+
+   - name: Jenkins repo
+     get_url:
+      dest: /etc/yum.repos.d/jenkins.repo
+      url: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+   - name: Jenkins install
+     yum:
+       name=http://pkg.jenkins-ci.org/redhat-stable/jenkins-ci.org.key state=present
+       name=jenkins state=present
+   - name: Jenkins Service
+     command: systemctl "{{ item }}" jenkins.service
+     with_items:
+      - start
+      - enable
+   - name: Allow Jenkins
+     command: firewall-cmd "{{ item }}"
+     with_items:
+      - --zone=public --permanent --add-port=8080/tcp
+      - --reload
