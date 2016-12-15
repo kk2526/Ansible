@@ -1,2 +1,0 @@
-[web-vms]
-ansible_vm[01:02] disk='5' datastore='datastore1' network='LAN' memory='256' cpucount='1' osid='ubuntu64Guest' image='datastore1/Images/ubuntu-14.04.2-server-amd64.iso'
