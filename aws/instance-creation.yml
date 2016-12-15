@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+ 
+  tasks:
+    - name: create
+      ec2:
+        key_name: First-EC2-key
+        group: launch-wizard-1
+        image: ami-b73b63a0
+        instance_type: t2.micro
+        wait: true
+        exact_count: 1
+        instance_tags:
+           Name: Ansible
+        count_tag:
+           Name: Ansible
+        region: "us-east-1"
+        user_data: " {{ lookup('file', 'aws_running') }}"
+                     
